@@ -1,1 +1,1 @@
-DROP DATABASE mulamaapi;
+DROP DATABASE orgapi;

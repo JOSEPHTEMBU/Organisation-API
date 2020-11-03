@@ -1,12 +1,12 @@
-CREATE DATABASE mulamaapi;
+CREATE DATABASE orgapi;
 
-\c mulamaapi
+\c orgapi
 
 CREATE TABLE news(
     id SERIAL PRIMARY KEY,
     title VARCHAR,
     content VARCHAR,
-    sectionId INTEGER
+    departmentId INTEGER
 );
 
 CREATE TABLE users(
@@ -14,11 +14,11 @@ CREATE TABLE users(
     name VARCHAR,
     userPosition VARCHAR,
     role VARCHAR,
-    sectionId INTEGER
+    departmentId INTEGER
 );
 
-CREATE TABLE sections(
+CREATE TABLE departments(
     id SERIAL PRIMARY KEY,
-    sectionName VARCHAR,
+    departmentName VARCHAR,
     description VARCHAR
 );
