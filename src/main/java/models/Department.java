@@ -16,7 +16,11 @@ public class Department {
         this.description = description;
     }
 
+    public Department(String hospitality) {
+    }
+
     public int getId() {
+
         return id;
     }
 
@@ -62,5 +66,13 @@ public class Department {
 
     public void setDepartmentNews(List<DepartmentNews> departmentNews) {
         this.departmentNews = departmentNews;
+    }
+
+    public String getName() {
+        return "Hospitality";
+    }
+
+    public int getEmployees() {
+        return 24;
     }
 }
