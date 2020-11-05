@@ -34,19 +34,26 @@ public class App {
         staticFileLocation("/public");
         Connection conn;
 
-
-
-        String connectionString = "jdbc:postgresql://localhost:5432/orgapi";
+//        ---Local Database---
+        String connectionString = "jdbc:postgresql://localhost:5432/mulas";
         Sql2o sql2o = new Sql2o(connectionString, "moringa", "Access");
+
+//        ---heroku Database---
+//        String connectionString = "jdbc:postgresql://ec2-3-215-207-12.compute-1.amazonaws.com/d5g55ik27nqpq9"; // heroku db connection string
+//        Sql2o sql2o = new Sql2o(connectionString, "mqqnohfjxmhjlz", "821577bd90197e76ac9a9266af4314a1130af55634e8890097b282ee04841153"); // heroku db sql2o instance
+
+
+//        String connectionString = "jdbc:postgresql://localhost:5432/orgapi";
+//        Sql2o sql2o = new Sql2o(connectionString, "moringa", "Access");
 
         Sql2oGeneralNewsDAO generalNewsDAO = new Sql2oGeneralNewsDAO(sql2o);
         Sql2oDepartmentDAO departmentDAO = new Sql2oDepartmentDAO(sql2o);
         Sql2oUserDAO userDAO = new Sql2oUserDAO(sql2o);
         Sql2oDepartmentNewsDAO departmentNewsDAO = new Sql2oDepartmentNewsDAO(sql2o);
 
+
         Map<String, Object> model = new HashMap<>();
         Gson gson = new Gson();
-
 
 
 //        API ROUTES
@@ -61,7 +68,7 @@ public class App {
 
         get("/api/departments", (req, res) -> {
             List<Department> departments = departmentDAO.getAllDepartments();
-            for(Department department: departments){
+            for (Department department : departments) {
                 int departmentId = department.getId();
                 List<User> usersInDepartment = departmentDAO.getDepartmentUsersById(departmentId);
                 department.setDepartmentUsers(usersInDepartment);
@@ -90,17 +97,37 @@ public class App {
             response.status(201);
             return gson.toJson(department);
         });
-
-
-
-
+        post("/user/new", "application/json", (request, response) -> {
+            User user = gson.fromJson(request.body(), User.class);
+            userDAO.add(user);
+            response.status(201);
+            return gson.toJson(user);
+        });
+        post("/Department/new", "application/json", (request, response) -> {
+            Department department = gson.fromJson(request.body(), Department.class);
+            departmentDAO.add(department);
+            response.status(201);
+            return gson.toJson(department);
+        });
+        post("/DepartmentNews/new", "application/json", (request, response) -> {
+            DepartmentNews departmentNews = gson.fromJson(request.body(), DepartmentNews.class);
+            departmentNewsDAO.add(departmentNews);
+            response.status(201);
+            return gson.toJson(departmentNews);
+        });
+        post("/GeneralNews/new", "application/json", (request, response) -> {
+            GeneralNews generalNews = gson.fromJson(request.body(), GeneralNews.class);
+            generalNewsDAO.add(generalNews);
+            response.status(201);
+            return gson.toJson(generalNews);
+        });
 //        UI ROUTES
 
         get("/", (req, res) -> {
             model.put("departmentNews", departmentNewsDAO.getAllDepartmentNews());
             model.put("users", userDAO.getAllUsers());
             model.put("departments", departmentDAO.getAllDepartments());
-            model.put("generalnews",generalNewsDAO.getAllGeneralNews());
+            model.put("generalnews", generalNewsDAO.getAllGeneralNews());
             return new ModelAndView(model, "index.hbs");
         }, new HandlebarsTemplateEngine());
 
@@ -111,12 +138,12 @@ public class App {
         post("/addgeneral", (req, res) -> {
             String title = req.queryParams("title");
             String content = req.queryParams("content");
-            GeneralNews newGeneralNews = new GeneralNews(title,content);
+            GeneralNews newGeneralNews = new GeneralNews(title, content);
             generalNewsDAO.add(newGeneralNews);
             model.put("departmentNews", departmentNewsDAO.getAllDepartmentNews());
             model.put("users", userDAO.getAllUsers());
             model.put("departments", departmentDAO.getAllDepartments());
-            model.put("generalnews",generalNewsDAO.getAllGeneralNews());
+            model.put("generalnews", generalNewsDAO.getAllGeneralNews());
             return new ModelAndView(model, "index.hbs");
         }, new HandlebarsTemplateEngine());
 
@@ -127,12 +154,12 @@ public class App {
         post("/adddepartment", (req, res) -> {
             String name = req.queryParams("name");
             String description = req.queryParams("description");
-            Department newDepartment = new Department(name,description);
+            Department newDepartment = new Department(name, description);
             departmentDAO.add(newDepartment);
             model.put("departmentNews", departmentNewsDAO.getAllDepartmentNews());
             model.put("users", userDAO.getAllUsers());
             model.put("departments", departmentDAO.getAllDepartments());
-            model.put("generalnews",generalNewsDAO.getAllGeneralNews());
+            model.put("generalnews", generalNewsDAO.getAllGeneralNews());
             return new ModelAndView(model, "index.hbs");
         }, new HandlebarsTemplateEngine());
 
@@ -146,12 +173,12 @@ public class App {
             String position = req.queryParams("position");
             String role = req.queryParams("role");
             int departmentId = Integer.parseInt(req.queryParams("department"));
-            User newUser = new User(name,position, role,departmentId);
+            User newUser = new User(name, position, role, departmentId);
             userDAO.add(newUser);
             model.put("departmentNews", departmentNewsDAO.getAllDepartmentNews());
             model.put("users", userDAO.getAllUsers());
             model.put("departments", departmentDAO.getAllDepartments());
-            model.put("generalnews",generalNewsDAO.getAllGeneralNews());
+            model.put("generalnews", generalNewsDAO.getAllGeneralNews());
             return new ModelAndView(model, "index.hbs");
         }, new HandlebarsTemplateEngine());
 
@@ -164,13 +191,14 @@ public class App {
             String title = req.queryParams("title");
             String content = req.queryParams("content");
             int departmentId = Integer.parseInt(req.queryParams("department"));
-            DepartmentNews newDepartmentNews = new DepartmentNews(title,content,departmentId);
+            DepartmentNews newDepartmentNews = new DepartmentNews(title, content, departmentId);
             departmentNewsDAO.add(newDepartmentNews);
             model.put("departmentNews", departmentNewsDAO.getAllDepartmentNews());
             model.put("users", userDAO.getAllUsers());
             model.put("departments", departmentDAO.getAllDepartments());
-            model.put("generalnews",generalNewsDAO.getAllGeneralNews());
+            model.put("generalnews", generalNewsDAO.getAllGeneralNews());
             return new ModelAndView(model, "index.hbs");
         }, new HandlebarsTemplateEngine());
+
     }
 }

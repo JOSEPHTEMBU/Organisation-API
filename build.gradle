@@ -22,3 +22,4 @@ dependencies {
     compile 'com.google.code.gson:gson:2.5'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.2'
 }
+task stage(dependsOn: ['clean', 'installDist'])

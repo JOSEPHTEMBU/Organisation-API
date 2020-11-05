@@ -1,6 +1,6 @@
-CREATE DATABASE orgapi;
+CREATE DATABASE mulas;
 
-\c orgapi
+\c mulas
 
 CREATE TABLE news(
     id SERIAL PRIMARY KEY,
